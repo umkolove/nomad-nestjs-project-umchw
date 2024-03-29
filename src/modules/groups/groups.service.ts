@@ -46,10 +46,18 @@ export class GroupsService extends CrudService<GroupDocument> {
     group_id: ObjectId,
   ): Promise<UserDocument> {
     try {
-      return await this.userRepository.updateOne(
+      const result = await this.userRepository.updateOne(
         { _id: student_id },
-        { group_id },
+        { group_id: group_id },
       );
+
+      if (result) {
+        const group = await this.groupRepository.findById(group_id);
+        group.student_count += 1;
+        await group.save();
+      }
+
+      return result;
     } catch (error) {
       return error.message;
     }

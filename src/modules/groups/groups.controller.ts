@@ -11,6 +11,8 @@ import { GroupsService } from './groups.service';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CreateGroupDto } from './dto';
 import { GroupDocument } from '../database/models/group.model';
+import { ObjectId } from '../../helpers/types/objectid.type';
+import { IdValidationPipe } from '../../helpers/pipes/id-validation.pipe';
 
 @ApiTags('Groups')
 @Controller('groups')
@@ -39,7 +41,9 @@ export class GroupsController {
   @ApiOperation({ summary: 'Удалить группу по айди' })
   @Delete(':id')
   @ApiParam({ name: 'id', type: 'string', required: true })
-  async deleteGroupById(@Param() group_id): Promise<GroupDocument> {
+  async deleteGroupById(
+    @Param('id') group_id,
+  ): Promise<GroupDocument> {
     return await this.groupsService.deleteGroupById(group_id.id);
   }
 
@@ -48,8 +52,8 @@ export class GroupsController {
   @ApiParam({ name: 'user_id', type: 'string', required: true })
   @ApiParam({ name: 'group_id', type: 'string', required: true })
   async addStudentToGroup(
-    @Param('user_id') user_id,
-    @Param('group_id') group_id,
+    @Param('user_id', IdValidationPipe) user_id: ObjectId,
+    @Param('group_id', IdValidationPipe) group_id: ObjectId,
   ) {
     return await this.groupsService.addStudentToGroup(user_id, group_id);
   }

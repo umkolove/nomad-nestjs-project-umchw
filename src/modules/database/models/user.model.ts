@@ -22,7 +22,7 @@ export class User {
   email: string;
 
   @ApiProperty({ type: 'string' })
-  @Prop({ type: Types.ObjectId })
+  @Prop({ type: Types.ObjectId, default: null })
   group_id: Types.ObjectId;
 
   @ApiProperty({ type: 'string' })

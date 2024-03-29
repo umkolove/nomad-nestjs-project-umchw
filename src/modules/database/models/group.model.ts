@@ -19,6 +19,9 @@ export class Group {
   @Prop({ required: true })
   description: string;
 
+  @Prop({ default: 0 })
+  student_count: number;
+
   @Prop({ default: false })
   is_deleted: boolean;
 }
