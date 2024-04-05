@@ -33,9 +33,12 @@ export class GroupsService extends CrudService<GroupDocument> {
     }
   }
 
-  async deleteGroupById(group_id: ObjectId): Promise<GroupDocument> {
+  async deleteGroupById(group_id: ObjectId): Promise<GroupDocument | string> {
     try {
-      return await this.groupRepository.deleteOne({ _id: group_id });
+      const group = await this.groupRepository.findById(group_id);
+      return group
+        ? await this.groupRepository.deleteOne({ _id: group_id })
+        : 'Такой группы нет. Не получилось удалить';
     } catch (error) {
       return error.message;
     }
@@ -44,20 +47,33 @@ export class GroupsService extends CrudService<GroupDocument> {
   async addStudentToGroup(
     student_id: ObjectId,
     group_id: ObjectId,
-  ): Promise<UserDocument> {
+  ): Promise<UserDocument | string> {
     try {
-      const result = await this.userRepository.updateOne(
-        { _id: student_id },
-        { group_id: group_id },
-      );
+      const student = await this.userRepository.findById(student_id);
 
-      if (result) {
+      if (!student.group_id) {
         const group = await this.groupRepository.findById(group_id);
         group.student_count += 1;
         await group.save();
       }
 
-      return result;
+      if (student.group_id.toString() === group_id.toString()) {
+        return `Студент ${student.full_name} уже состоит в этой группе`;
+      }
+
+      const oldGroup = await this.groupRepository.findById(student.group_id);
+      const newGroup = await this.groupRepository.findById(group_id);
+
+      oldGroup.student_count -= 1;
+      newGroup.student_count += 1;
+
+      await oldGroup.save();
+      await newGroup.save();
+      
+      return await this.userRepository.updateOne(
+        { _id: student_id },
+        { group_id },
+      );
     } catch (error) {
       return error.message;
     }

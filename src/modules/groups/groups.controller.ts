@@ -43,11 +43,13 @@ export class GroupsController {
   @ApiParam({ name: 'id', type: 'string', required: true })
   async deleteGroupById(
     @Param('id') group_id,
-  ): Promise<GroupDocument> {
+  ): Promise<GroupDocument | string> {
     return await this.groupsService.deleteGroupById(group_id.id);
   }
 
-  @ApiOperation({ summary: 'Добавить студента в группу' })
+  @ApiOperation({
+    summary: 'Добавить студента в группу / изменить группу у студента',
+  })
   @Put(':user_id/:group_id')
   @ApiParam({ name: 'user_id', type: 'string', required: true })
   @ApiParam({ name: 'group_id', type: 'string', required: true })
