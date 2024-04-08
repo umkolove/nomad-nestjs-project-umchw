@@ -4,6 +4,8 @@ import { UserSchema } from './models/user.model';
 import { UserRepository } from './repositories/user.repository';
 import { GroupSchema } from './models/group.model';
 import { GroupRepository } from './repositories/group.repository';
+import { SubjectSchema } from './models/subject.model';
+import { SubjectRepository } from './repositories/subject.repository';
 
 @Global()
 @Module({
@@ -17,9 +19,13 @@ import { GroupRepository } from './repositories/group.repository';
         name: 'Groups',
         schema: GroupSchema,
       },
+      {
+        name: 'Subjects',
+        schema: SubjectSchema,
+      },
     ]),
   ],
-  providers: [UserRepository, GroupRepository],
-  exports: [UserRepository, GroupRepository],
+  providers: [UserRepository, GroupRepository, SubjectRepository],
+  exports: [UserRepository, GroupRepository, SubjectRepository],
 })
 export class DatabaseModule {}

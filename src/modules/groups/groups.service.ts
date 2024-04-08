@@ -4,15 +4,16 @@ import { CrudService } from '../../helpers/crud.service';
 import { GroupDocument } from '../database/models/group.model';
 import { CreateGroupDto } from './dto';
 import { ObjectId } from '../../helpers/types/objectid.type';
-import { group } from 'console';
 import { UserRepository } from '../database/repositories/user.repository';
 import { UserDocument } from '../database/models/user.model';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class GroupsService extends CrudService<GroupDocument> {
   constructor(
     readonly groupRepository: GroupRepository,
     readonly userRepository: UserRepository,
+    readonly userService: UsersService
   ) {
     super(groupRepository);
   }
@@ -49,7 +50,7 @@ export class GroupsService extends CrudService<GroupDocument> {
     group_id: ObjectId,
   ): Promise<UserDocument | string> {
     try {
-      const student = await this.userRepository.findById(student_id);
+      const student = await this.userService.findUserById(student_id);
 
       if (!student.group_id) {
         const group = await this.groupRepository.findById(group_id);
@@ -69,7 +70,7 @@ export class GroupsService extends CrudService<GroupDocument> {
 
       await oldGroup.save();
       await newGroup.save();
-      
+
       return await this.userRepository.updateOne(
         { _id: student_id },
         { group_id },
