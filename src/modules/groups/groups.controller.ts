@@ -6,13 +6,18 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { GroupsService } from './groups.service';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CreateGroupDto } from './dto';
 import { GroupDocument } from '../database/models/group.model';
 import { ObjectId } from '../../helpers/types/objectid.type';
 import { IdValidationPipe } from '../../helpers/pipes/id-validation.pipe';
+import { RolesGuard } from '../../helpers/guards/roles.guard';
+import { Role } from '../../helpers/decorators/role.decorator';
+import { Roles } from '../../helpers/enums/roles.enum';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Groups')
 @Controller('groups')
@@ -25,10 +30,16 @@ export class GroupsController {
     return await this.groupsService.createGroup(createGroupDto);
   }
 
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получить весь список групп' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(Roles.ADMIN)
   @Get('all')
   async getAllGroups(): Promise<GroupDocument[]> {
-    return await this.groupsService.find({});
+    const query = {
+      is_deleted: false,
+    };
+    return await this.groupsService.find({ query });
   }
 
   @ApiOperation({ summary: 'Получить группу по айди' })

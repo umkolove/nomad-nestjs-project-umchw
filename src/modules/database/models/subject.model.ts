@@ -2,9 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Types } from 'mongoose';
 import { ObjectId } from '../../../helpers/types/objectid.type';
+import { CollectionName } from '../../../helpers/enums/collection-names.enum';
 
 @Schema({
-  collection: 'Subjects',
+  collection: CollectionName.Subject,
   timestamps: {
     createdAt: 'created_at',
     updatedAt: 'updated_at',

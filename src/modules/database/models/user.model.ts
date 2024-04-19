@@ -2,9 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { CollectionName } from '../../../helpers/enums/collection-names.enum';
+import { Roles } from '../../../helpers/enums/roles.enum';
 
 @Schema({
-  collection: 'Users',
+  collection: CollectionName.User,
   timestamps: {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
@@ -22,7 +24,11 @@ export class User {
   email: string;
 
   @ApiProperty({ type: 'string' })
-  @Prop({ type: Types.ObjectId, default: null })
+  @Prop({ type: 'string', required: true, default: Roles.STUDENT })
+  role: Roles;
+
+  @ApiProperty({ type: 'string' })
+  @Prop({ type: Types.ObjectId })
   group_id: Types.ObjectId;
 
   @ApiProperty({ type: 'string' })
